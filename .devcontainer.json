@@ -1,0 +1,37 @@
+{
+  "image": "mcr.microsoft.com/vscode/devcontainers/base",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "21",
+      "installGradle": "true",
+      "gradleVersion": "8.7"
+    },
+    "ghcr.io/devcontainers/features/terraform:1": {},
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {}
+  },
+  "forwardPorts": [
+    8080
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscode-icons-team.vscode-icons",
+        "vscjava.vscode-java-pack",
+        "redhat.java",
+        "vmware.vscode-spring-boot"
+      ]
+    }
+  },
+  "mounts": [
+    "source=${localEnv:HOME}/.gradle,target=/home/vscode/.gradle,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.kube,target=/home/vscode/.kube,type=bind,consistency=cached"
+  ],
+  "containerEnv": {
+    "KAFKA_USERNAME": "konihwes",
+    "KAFKA_PASSWORD": "${localEnv:KAFKA_PASSWORD}"
+  },
+  "postCreateCommand": "gradle wrapper --gradle-version 8.7"
+}

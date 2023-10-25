@@ -1,0 +1,12 @@
+topics:
+  source: source-topic
+  sink: sink-topic
+
+spring:
+  application.name: detect
+  kafka:
+    client-id: ${spring.application.name}
+    bootstrap-servers: ${spring.kafka.bootstrap-servers}
+    consumer:
+      auto-offset-reset: earliest
+      group-id: ${spring.application.name}

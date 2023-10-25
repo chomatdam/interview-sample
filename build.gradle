@@ -1,0 +1,71 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.5'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'io.freefair.lombok' version '8.6'
+    id "com.diffplug.spotless" version "6.25.0"
+}
+
+group = 'com.pelotech'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '21'
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    awsSdkVersion   = "1.12.705"
+    s3MockVersion   = "0.2.6"
+}
+
+dependencies {
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation "com.amazonaws:aws-java-sdk-s3:$awsSdkVersion"
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+}
+
+compileJava.dependsOn 'spotlessApply'
+
+test {
+    testLogging {
+        events "FAILED", "PASSED", "STANDARD_OUT", "STANDARD_ERROR"
+    }
+}
+
+testing {
+    suites {
+        configureEach {
+            useJUnitJupiter()
+        }
+
+        test {
+            dependencies {
+                implementation('org.mockito:mockito-junit-jupiter')
+            }
+        }
+        integrationTest(JvmTestSuite) {
+            dependencies {
+                implementation project()
+                implementation 'org.springframework.boot:spring-boot-starter-test'
+                implementation 'org.springframework.kafka:spring-kafka-test'
+                implementation 'com.fasterxml.jackson.core:jackson-databind'
+                implementation "io.findify:s3mock_2.13:$s3MockVersion"
+            }
+        }
+    }
+}
+integrationTest.mustRunAfter(test)
+
+tasks.named('check') {
+    dependsOn(testing.suites.integrationTest)
+}
